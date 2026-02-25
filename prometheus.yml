@@ -1,0 +1,47 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    environment: "${ENVIRONMENT}"
+    project: "${PROJECT_NAME}"
+
+# ─────────────────────────────────────────────
+# Scrape configs
+# ─────────────────────────────────────────────
+scrape_configs:
+
+  # Self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Node.js backend — scrapes /metrics endpoint
+  # Uses ECS Service Connect DNS for discovery
+  - job_name: "backend"
+    metrics_path: "/metrics"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["backend:3000"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+
+  # If using multiple backend replicas, use DNS-based SD
+  # - job_name: "backend-dns"
+  #   dns_sd_configs:
+  #     - names:
+  #         - "backend.myapp-prod.local"
+  #       type: A
+  #       port: 3000
+
+# ─────────────────────────────────────────────
+# Alerting (optional — wire to Alertmanager later)
+# ─────────────────────────────────────────────
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ["alertmanager:9093"]
+
+# rule_files:
+#   - /etc/prometheus/rules/*.yml

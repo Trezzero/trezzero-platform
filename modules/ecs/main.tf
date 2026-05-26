@@ -298,7 +298,7 @@ resource "aws_ecs_service" "prometheus" {
   }
 
   deployment_configuration {
-    minimum_healthy_percent = 0  # Allow full stop/start for stateful service
+    minimum_healthy_percent = 0 # Allow full stop/start for stateful service
     maximum_percent         = 100
 
     deployment_circuit_breaker {
@@ -348,7 +348,7 @@ resource "aws_ecs_task_definition" "grafana" {
         # Prometheus datasource pre-configured via env
         { name = "GF_DATASOURCES_DEFAULT_TYPE", value = "prometheus" },
         {
-          name  = "GF_DATASOURCES_DEFAULT_URL",
+          name = "GF_DATASOURCES_DEFAULT_URL",
           # Service discovery via ECS service connect or internal DNS
           value = "http://${var.project_name}-${var.environment}-prometheus.${var.project_name}-${var.environment}.local:9090"
         }
